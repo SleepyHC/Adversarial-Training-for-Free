@@ -129,7 +129,49 @@ def test(epoch):
     print('Test Acc of ckpt.{}: {}'.format(epoch, acc))
     return acc
 
+def test_50(epoch):
+    net.eval()
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        iterator = tqdm(testloader, ncols=0, leave=False)
+        for batch_idx, (inputs, targets) in enumerate(iterator):
+            inputs, targets = inputs.to(device), targets.to(device)   
+            with torch.enable_grad(): 
+                adv = adversary_50.perturb(inputs, targets)
+            outputs = net(adv)
+            _, predicted = outputs.max(1)
+            total += targets.size(0)
+            correct += predicted.eq(targets).sum().item()
+            iterator.set_description(str(predicted.eq(targets).sum().item()/targets.size(0)))
 
+
+    # Save checkpoint.
+    acc = 100.*correct/total
+    print('Test Acc of ckpt.{}: {}'.format(epoch, acc))
+    return acc
+
+def test_fgsm(epoch):
+    net.eval()
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        iterator = tqdm(testloader, ncols=0, leave=False)
+        for batch_idx, (inputs, targets) in enumerate(iterator):
+            inputs, targets = inputs.to(device), targets.to(device)   
+            with torch.enable_grad(): 
+                adv = adversary_FGSM.perturb(inputs, targets)
+            outputs = net(adv)
+            _, predicted = outputs.max(1)
+            total += targets.size(0)
+            correct += predicted.eq(targets).sum().item()
+            iterator.set_description(str(predicted.eq(targets).sum().item()/targets.size(0)))
+
+
+    # Save checkpoint.
+    acc = 100.*correct/total
+    print('Test Acc of ckpt.{}: {}'.format(epoch, acc))
+    return acc
 
 def train(epoch):
     print('\nEpoch: %d' % epoch)
@@ -196,9 +238,12 @@ max_acc=0
 for epoch in range(start_epoch, 27):
     adjust_learning_rate(optimizer, epoch)
     train(epoch)
-    checkpoint = torch.load('./checkpoint/ckpt.{}'.format(args.epoch))
+    checkpoint = torch.load('./checkpoint/best'+args.datasets)
     net.load_state_dict(checkpoint['net'])
     net = net.to(device)
     net.eval()
-    test_all(111)
+    test(111)
+    test_50(111)
+    test_fgsm(111)
+
     
