@@ -204,7 +204,7 @@ def train(epoch):
 
     acc = 100.*correct/total
     print('Train acc:', acc)
-
+    global max_acc
     tmp_acc=test(epoch)
     if max_acc<tmp_acc:
         max_acc=tmp_acc
