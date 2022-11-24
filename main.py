@@ -238,6 +238,8 @@ max_acc=0
 for epoch in range(start_epoch, 27):
     adjust_learning_rate(optimizer, epoch)
     train(epoch)
+    
+for i in [1]:
     checkpoint = torch.load('./checkpoint/best'+args.datasets)
     net.load_state_dict(checkpoint['net'])
     net = net.to(device)
