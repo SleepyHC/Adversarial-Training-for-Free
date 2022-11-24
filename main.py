@@ -31,7 +31,7 @@ parser.add_argument('--resume', '-r', default=None, type=int, help='resume from 
 parser.add_argument('--datasets', '-d', default='CIFAR10', type=str, help='datasets')
 args = parser.parse_args()
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+device = 'cuda:2' if torch.cuda.is_available() else 'cpu'
 start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 
 seed = args.seed
